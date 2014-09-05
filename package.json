@@ -1,0 +1,25 @@
+{
+  "name": "AutoSnap",
+  "version": "0.0.1",
+  "author": "Michael Kelly <m@michaelckelly.com>",
+  "description": "a simple utility to capture & upload iSight images",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/michaelckelly/auto-snap.git"
+  },
+  "engines": {
+    "node": ">=0.6"
+  },
+  "dependencies": {
+    "async": "0.9.x",
+    "aws-sdk": "2.0.x",
+    "envvar": "1.0.x",
+    "express": "4.8.x",
+    "ramda": "0.9.x",
+    "redis": "0.12.x",
+    "socket.io": "1.2.x"
+  },
+  "devDependencies": {
+    "jscs": "1.10.x"
+  }
+}

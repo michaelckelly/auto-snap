@@ -1,26 +1,48 @@
 <html>
 <head>
-<script src="https://cdn.socket.io/socket.io-1.0.6.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.2.1.js"></script>
 <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-</head>
-<body>
-	<div id='container'>
-		<input type='button' value='Take a Snap!' id='takeSnap' />
-	</div>
-	<div id='imgHolder'></div>
-</body>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script></head>
+
+
+  <body>
+
+    <div class="container">
+      <div class="header">
+        <h3 class="text-muted">AutoSnap</h3>
+      </div>
+
+      <div class="jumbotron">
+        <h1>Snaps on Demand</h1>
+        <p class="lead">Just click "Request a Snap" below to get started.  Your requested snap should appear shortly.</p>
+        <div id='imgHolder'></div>
+        <p><a class="btn btn-lg btn-success" href="#" role="button" id="takeSnap">Request a Snap</a></p>
+      </div>
+      <footer class="footer">
+        <p>&copy; 122Blue 2015</p>
+      </footer>
+
+    </div> <!-- /container -->
+  </body>
 <script type='text/javascript'>
- var socket = io();
- $('#takeSnap').click(function() {
- 	socket.emit('takeSnap');
- });
+var socket = io();
+$('#takeSnap').click(function() {
+  socket.emit('autosnap_request');
+});
 
- socket.on('snapSuccess', function(snap) {
- 	$('#imgHolder').append("<img width='640' height='512' src='"+ snap.url +"' />");
- });
+socket.on('autosnap_success', function(url) {
+  $('#imgHolder').append("<img width='640' height='512' src='"+ url +"' />");
+});
 
- socket.on('snapFail', function(err) {
- 	console.log(err);
- });
+socket.on('snapFail', function(err) {
+  console.error(err);
+});
 </script>
 </html>
