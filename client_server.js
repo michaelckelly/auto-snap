@@ -1,18 +1,21 @@
-// Dependencies (there are quite a few sadly...)
 var spawn = require('child_process').spawn
-  , AWS   = require('aws-sdk')
-  , uuid  = require('node-uuid')
-  , fs    = require('fs')
-  , app   = require('express')()
-  , http  = require('http').Server(app)
-  , io    = require('socket.io')(http)
-  , R     = require('ramda')
-  , crypto = require('crypto');
-
+var crypto = require('crypto');
+var envvar = require('envvar');
+var express = require('express');
+var fs = require('fs');
 var redis = require('redis');
-var redis_config = JSON.parse(fs.readFileSync('./config/redis.json'));
-var client = redis.createClient(redis_config.port, redis_config.host, {no_ready_check:true});
-client.auth(redis_config.password);
+
+var APP_PORT = envvar.number('APP_PORT', 3800);
+var REDIS_PORT = envvar.number('REDIS_PORT', 6379);
+var REDIS_HOST = envvar.string('REDIS_HOST', 'localhost');
+
+var client = redis.createClient(REDIS_PORT, REDIS_HOST);
+
+var app = express();
+var http = require('http').Server(app)
+
+// Initialize socket.io
+var io = require('socket.io')(http);
 
 // Serve the interface
 app.get('/', function(req, res){
@@ -21,21 +24,22 @@ app.get('/', function(req, res){
 
 // Socket interface
 io.on('connection', function(socket){
-	socket.on('takeSnap', function() {
-		var identifier = crypto.randomBytes(10).toString('base64');
-		client.publish('autoSnap-requests', identifier);
-		client.subscribe(identifier);
+  socket.on('autosnap_request', function() {
+    var identifier = crypto.randomBytes(10).toString('hex');
+    client.publish('autosnap_requests', identifier);
 
-		client.on('message', function(channel, snap_uri) {
-			if(channel === identifier) {
-				socket.emit('snapSuccess', snap_uri);
-				client.unsubscribe(identifier)
-			}
-		});
-	});
+    client.subscribe(identifier);
+
+    client.on('message', function(channel, snap_uri) {
+      if(channel === identifier) {
+        socket.emit('autosnap_success', snap_uri);
+        client.unsubscribe(identifier)
+      }
+    });
+  });
 });
 
-// Server
-http.listen(3800, function(){
-	console.log('autoSnap server listening on port 3000');
+// Initialize server
+http.listen(APP_PORT, function(){
+  console.log('autoSnap server listening on port', APP_PORT);
 });

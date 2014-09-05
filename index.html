@@ -1,6 +1,6 @@
 <html>
 <head>
-<script src="https://cdn.socket.io/socket.io-1.0.6.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.2.1.js"></script>
 <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 </head>
 <body>
@@ -10,17 +10,23 @@
 	<div id='imgHolder'></div>
 </body>
 <script type='text/javascript'>
- var socket = io();
- $('#takeSnap').click(function() {
- 	socket.emit('takeSnap');
- });
+var socket = io();
+$('#takeSnap').click(function() {
+  socket.emit('autosnap_request');
+});
 
+<<<<<<< HEAD
  socket.on('snapSuccess', function(url) {
  	$('#imgHolder').append("<img width='640' height='512' src='"+ url +"' />");
  });
+=======
+socket.on('autosnap_success', function(url) {
+  $('#imgHolder').append("<img width='640' height='512' src='"+ url +"' />");
+});
+>>>>>>> Kitchen Sink
 
- socket.on('snapFail', function(err) {
- 	console.log(err);
- });
+socket.on('snapFail', function(err) {
+  console.error(err);
+});
 </script>
 </html>
