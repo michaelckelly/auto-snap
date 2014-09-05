@@ -1,0 +1,26 @@
+<html>
+<head>
+<script src="https://cdn.socket.io/socket.io-1.0.6.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+</head>
+<body>
+	<div id='container'>
+		<input type='button' value='Take a Snap!' id='takeSnap' />
+	</div>
+	<div id='imgHolder'></div>
+</body>
+<script type='text/javascript'>
+ var socket = io();
+ $('#takeSnap').click(function() {
+ 	socket.emit('takeSnap');
+ });
+
+ socket.on('snapSuccess', function(snap) {
+ 	$('#imgHolder').append("<img width='640' height='512' src='"+ snap.url +"' />");
+ });
+
+ socket.on('snapFail', function(err) {
+ 	console.log(err);
+ });
+</script>
+</html>
