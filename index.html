@@ -15,8 +15,8 @@
  	socket.emit('takeSnap');
  });
 
- socket.on('snapSuccess', function(snap) {
- 	$('#imgHolder').append("<img width='640' height='512' src='"+ snap.url +"' />");
+ socket.on('snapSuccess', function(url) {
+ 	$('#imgHolder').append("<img width='640' height='512' src='"+ url +"' />");
  });
 
  socket.on('snapFail', function(err) {
