@@ -10,6 +10,7 @@ var APP_HOST = envvar.string('APP_HOST');
 var REDIS_PORT = envvar.number('REDIS_PORT', 6379);
 var REDIS_HOST = envvar.string('REDIS_HOST', 'localhost');
 
+var publisher = redis.createClient(REDIS_PORT, REDIS_HOST);
 var client = redis.createClient(REDIS_PORT, REDIS_HOST);
 
 var app = express();
@@ -27,7 +28,7 @@ app.get('/', function(req, res){
 io.on('connection', function(socket){
   socket.on('autosnap_request', function() {
     var identifier = crypto.randomBytes(10).toString('hex');
-    client.publish('autosnap_requests', identifier);
+    publisher.publish('autosnap_requests', identifier);
 
     client.subscribe(identifier);
 
