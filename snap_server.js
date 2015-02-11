@@ -7,6 +7,9 @@ var envvar = require('envvar');
 var R = require('ramda');
 var redis = require('redis');
 
+var SNAP_HANDLER = envvar.string('SNAP_HANDLER', 'imagesnap');
+var handlers = require('./snap_handlers');
+
 var AWS_ACCESS_KEY_ID = envvar.string('AWS_ACCESS_KEY_ID');
 var AWS_SECRET_ACCESS_KEY = envvar.string('AWS_SECRET_ACCESS_KEY');
 AWS.config.update({
@@ -35,9 +38,7 @@ subscriber.on('message', function(channel, identifier) {
 
 var captureSnap = function(identifier, cbk) {
   var filename = identifier + '.jpg';
-  console.log('filename: '+ filename);
-  // var filename = uuid.v4() + '.jpg';
-  var snapShot = cp.spawn('imagesnap', ['-w', 3.0, filename]);
+  var snapShot = handlers[SNAP_HANDLER](filename);
 
   snapShot.on('close', function() {
     fs.readFile('./'+ filename, function(err, data) {
