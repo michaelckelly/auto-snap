@@ -20,12 +20,12 @@ var http = require('http').Server(app)
 var io = require('socket.io')(http);
 
 // Serve the interface
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
 // Socket interface
-io.on('connection', function(socket){
+io.on('connection', function(socket) {
   socket.on('autosnap_request', function() {
     var identifier = crypto.randomBytes(10).toString('hex');
     publisher.publish('autosnap_requests', identifier);
@@ -33,7 +33,7 @@ io.on('connection', function(socket){
     client.subscribe(identifier);
 
     client.on('message', function(channel, snap_uri) {
-      if(channel === identifier) {
+      if (channel === identifier) {
         socket.emit('autosnap_success', snap_uri);
         client.unsubscribe(identifier)
       }
@@ -42,6 +42,6 @@ io.on('connection', function(socket){
 });
 
 // Initialize server
-http.listen(APP_PORT, APP_HOST, function(){
+http.listen(APP_PORT, APP_HOST, function() {
   console.log('autoSnap server listening on port', APP_PORT);
 });
