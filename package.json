@@ -1,8 +1,8 @@
 {
-  "name": "AutoSnap",
+  "name": "auto-snap",
   "version": "0.0.1",
   "author": "Michael Kelly <m@michaelckelly.com>",
-  "description": "a simple utility to capture & upload iSight images",
+  "description": "a simple utility to capture & upload images",
   "repository": {
     "type": "git",
     "url": "https://github.com/michaelckelly/auto-snap.git"
