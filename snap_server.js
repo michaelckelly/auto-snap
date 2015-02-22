@@ -35,10 +35,18 @@ subscriber.subscribe('autosnap_requests');
 subscriber.on('message', function(channel, identifier) {
   if (channel === 'autosnap_requests') {
     async.waterfall([
-      R.lPartial(captureSnap, identifier),
+      R.partial(captureSnap, identifier),
       uploadSnap,
     ], function(err, snap) {
-      publisher.publish(identifier, snap.url);
+      if (err != null) {
+        publisher.publish(identifier, JSON.stringify({
+          error: err.toString(),
+        }));
+      } else {
+        publisher.publish(identifier, JSON.stringify({
+          url: snap.url,
+        }));
+      }
     });
   }
   // Received a message on an unknown channel...
@@ -47,6 +55,8 @@ subscriber.on('message', function(channel, identifier) {
 var captureSnap = function(identifier, cbk) {
   var filename = identifier + '.jpg';
   var snapShot = handlers[SNAP_HANDLER](filename);
+
+  snapShot.on('error', cbk);
 
   snapShot.on('close', function() {
     fs.readFile('./' + filename, function(err, data) {

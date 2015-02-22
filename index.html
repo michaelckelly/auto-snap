@@ -41,8 +41,8 @@ socket.on('autosnap_success', function(url) {
   $('#imgHolder').append("<img width='640' height='512' src='"+ url +"' />");
 });
 
-socket.on('snapFail', function(err) {
-  console.error(err);
+socket.on('autosnap_error', function(err) {
+  $('#imgHolder').append("<p>Uh oh!  Looks like we experienced an error attempting to get you a snap.</p>");
 });
 </script>
 </html>
