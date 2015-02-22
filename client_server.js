@@ -1,9 +1,10 @@
-var spawn = require('child_process').spawn
 var crypto = require('crypto');
+
 var envvar = require('envvar');
-var express = require('express');
-var fs = require('fs');
+var express = require('express')
 var redis = require('redis');
+var R = require('ramda');
+var S = require('sanctuary');
 
 var APP_PORT = envvar.number('APP_PORT', 3800);
 var APP_HOST = envvar.string('APP_HOST');
@@ -37,10 +38,23 @@ io.on('connection', function(socket) {
 
     client.subscribe(identifier);
 
-    client.on('message', function(channel, snap_uri) {
+    client.on('message', function(channel, body) {
       if (channel === identifier) {
-        socket.emit('autosnap_success', snap_uri);
-        client.unsubscribe(identifier)
+        var $message;
+        try {
+          $message = JSON.parse(body);
+        } catch (err) {
+          $message = {
+            error: 'Invalid message',
+          };
+        };
+
+        if (R.has('error', $message)) {
+          socket.emit('autosnap_error', $message.error);
+        } else {
+          socket.emit('autosnap_success', $message.url);
+        }
+        client.unsubscribe(identifier);
       }
     });
   });
