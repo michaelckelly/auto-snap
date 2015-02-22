@@ -15,6 +15,8 @@ module.exports = {
     '-D',
     3.0,
     '--no-banner',
+    '--skip',
+    10,
     filename,
   ]);
  },
