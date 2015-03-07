@@ -1,48 +1,55 @@
 <html>
 <head>
 <script src="https://cdn.socket.io/socket.io-1.2.1.js"></script>
-<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-
-<!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script></head>
-
-
+</head>
   <body>
-
     <div class="container">
       <div class="header">
         <h3 class="text-muted">AutoSnap</h3>
       </div>
-
       <div class="jumbotron">
         <h1>Snaps on Demand</h1>
-        <p class="lead">Just click "Request a Snap" below to get started.  Your requested snap should appear shortly.</p>
+        <p class="lead">Just click "Request a Snap" below to get started.  Your requested snap should appear shortly (within 5-10 seconds, normally).</p>
         <div id='imgHolder'></div>
-        <p><a class="btn btn-lg btn-success" href="#" role="button" id="takeSnap">Request a Snap</a></p>
+        <p><a class="btn btn-lg btn-success" href="#" role="button" id="takeSnap" onClick="takeSnap()">Request a Snap</a></p>
       </div>
       <footer class="footer">
         <p>&copy; 122Blue 2015</p>
       </footer>
-
-    </div> <!-- /container -->
+    </div>
   </body>
 <script type='text/javascript'>
 var socket = io();
-$('#takeSnap').click(function() {
-  socket.emit('autosnap_request');
-});
+var enableClick = true;
+var takeSnap = function() {
+  if(enableClick) {
+    document.getElementById('takeSnap').innerText = 'Working...';
+    socket.emit('autosnap_request');
+    enableClick = false;
+  } else {
+    return;
+  }
+};
 
 socket.on('autosnap_success', function(url) {
-  $('#imgHolder').append("<img width='640' height='512' src='"+ url +"' />");
+  enableClick = true;
+  document.getElementById('takeSnap').innerText = 'Request a Snap';
+  var img = document.createElement('img');
+  // TODO: These should be more dynamic if possible
+  // The socket notification could contain expected dims
+  img.width = 640;
+  img.height = 512;
+  img.src = url;
+  document.getElementById('imgHolder').appendChild(img);
 });
 
 socket.on('autosnap_error', function(err) {
-  $('#imgHolder').append("<p>Uh oh!  Looks like we experienced an error attempting to get you a snap.</p>");
+  enableClick = true;
+  document.getElementById('takeSnap').innerText = 'Request a Snap';
+  var error = document.createElement('p');
+  error.innerText = 'Uh oh!  Looks like we experienced an error attempting to get you a snap.  Maybe try again?';
+  document.getElementById('imgHolder').appendChild(error);
 });
 </script>
 </html>
